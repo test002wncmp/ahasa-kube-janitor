@@ -1,0 +1,74 @@
+{{- if .Values.cron.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "chart.fullname" . }}
+  labels:
+    app: {{ template "chart.name" . }}
+    chart: {{ template "chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  schedule: "{{ .Values.cron.schedule }}"
+  {{- if .Values.cron.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ .Values.cron.successfulJobsHistoryLimit }}
+  {{- end }}
+  {{- if .Values.cron.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cron.failedJobsHistoryLimit }}
+  {{- end }}
+  {{- if .Values.cron.suspend }}
+  suspend: {{ .Values.cron.suspend }}
+  {{- end }}
+  {{- if .Values.cron.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ .Values.cron.startingDeadlineSeconds }}
+  {{- end }}
+  jobTemplate:
+    metadata:
+      labels:
+        app: {{ template "chart.name" . }}
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ template "chart.name" . }}
+        spec:
+          serviceAccountName: {{ template "chart.fullname" . }}
+          restartPolicy: {{ .Values.restartPolicy }}
+          {{- if .Values.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 12 }}
+          {{- end }}
+          {{- if .Values.affinity }}
+          affinity:
+{{ toYaml .Values.affinity | indent 12 }}
+          {{- end }}
+          {{- if .Values.tolerations }}
+          tolerations:
+{{ toYaml .Values.tolerations | indent 12 }}
+          {{- end }}
+          {{- if .Values.image.pullSecrets }}
+          imagePullSecrets:
+{{ toYaml .Values.image.pullSecrets | indent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            args:
+{{- include "kubeJanitor.args" . | indent 14 }}
+            {{- if .Values.resources }}
+            resources:
+{{ toYaml .Values.resources | indent 14 }}
+            {{- end }}
+            securityContext:
+              readOnlyRootFilesystem: true
+              runAsNonRoot: true
+              runAsUser: 1000
+            volumeMounts:
+              - name: {{ template "chart.fullname" . }}-volume
+                mountPath: /config
+          volumes:
+            - name: {{ template "chart.fullname" . }}-volume
+              configMap:
+                name: {{ template "chart.fullname" . }}
+{{- end }}
