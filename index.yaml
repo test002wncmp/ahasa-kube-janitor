@@ -3,10 +3,10 @@ entries:
   kube-janitor:
   - apiVersion: v1
     appVersion: v20.4.1
-    created: "2020-01-07T13:31:04.993386765+01:00"
+    created: "2022-01-11T13:11:26.725987235+05:30"
     description: Clean up (delete) Kubernetes resources after a configured TTL (time
       to live)
-    digest: e2a0eeafb37b688d4a3d8b4f56268abf55edce6ffd36e87b957d64acb5fd5d27
+    digest: 6aef34970bac545cb0fdff102bac68dd3d810af432a88e0f187980f708fa7685
     home: https://codeberg.org/hjacobs/kube-janitor
     maintainers:
     - email: henning@jacobs1.de
@@ -17,6 +17,6 @@ entries:
     sources:
     - https://codeberg.org/hjacobs/kube-janitor
     urls:
-    - kube-janitor-0.1.0.tgz
-    version: 0.1.0
-generated: "2020-01-07T13:31:04.992860036+01:00"
+    - kube-janitor-0.2.0.tgz
+    version: 0.2.0
+generated: "2022-01-11T13:11:26.724030384+05:30"
